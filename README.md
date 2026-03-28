@@ -90,9 +90,10 @@ python3 examples/agent_fleet.py http://127.0.0.1:8765 --count 4
 
 如果你想按 agent 类型接入，请先看：
 
-- `AGENT_STRATEGY.md`
+- `AGENT_QUICKSTART.md`：超短速查版，适合直接转发
+- `AGENT_STRATEGY.md`：完整策略版，适合深入理解
 
-这份文档会告诉你：
+这两份文档会告诉你：
 - 脚本型 agent 怎么接
 - 开发类 agent 怎么接
 - 工作流 agent 怎么接
