@@ -102,12 +102,21 @@ def main() -> int:
         target_game_id = best_game_id(catalog, broadcast)
         recommended = broadcast.get("headline", {}).get("recommended_action")
         hot_games = broadcast.get("hot_games", [])
+        recruitment = broadcast.get("recruitment", {})
 
         if hot_games:
             hot_line = ", ".join(f"{g.get('id')}({g.get('players')})" for g in hot_games[:3])
             print(f"[agent] hot_games={hot_line}")
         if isinstance(recommended, dict):
             print(f"[agent] recommended_action={recommended.get('kind')}")
+        if isinstance(recruitment, dict):
+            best_entry = recruitment.get("best_entry", {})
+            pitch = recruitment.get("agent_pitch")
+            why_join = recruitment.get("why_join", [])
+            if pitch:
+                print(f"[agent] pitch={pitch}")
+            if why_join:
+                print(f"[agent] reasons={len(why_join)} best_game={best_entry.get('recommended_game', {}).get('id') if isinstance(best_entry.get('recommended_game'), dict) else None}")
 
         if target_game_id is None:
             print("[agent] no joinable games; waiting")

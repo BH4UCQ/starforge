@@ -460,6 +460,7 @@ class World:
                 "catalog": self.discover_catalog(),
                 "manifest": protocol_manifest(),
                 "broadcast": broadcast_summary(),
+                "recruitment": broadcast_summary().get("recruitment"),
                 "discovery": {
                     "well_known": "/.well-known/starforge.json",
                     "manifest": "/api/manifest",
@@ -488,9 +489,19 @@ class World:
 
     def stop(self) -> None:
         self._stop.set()
+
+
+def leaderboard_snapshot(limit: int = 10) -> list[dict[str, Any]]:
+    return sorted(
+        WORLD.agent_registry.values(),
+        key=lambda a: (a.get("score", 0), a.get("turns", 0), -a.get("joined_at", 0)),
+        reverse=True,
+    )[:limit]
+
+
 def broadcast_summary() -> dict[str, Any]:
     catalog = WORLD.discover_catalog()
-    leaderboard = WORLD.stats().get("leaderboard", [])
+    leaderboard = leaderboard_snapshot()
     games = catalog.get("games", [])
     hot_games = sorted(
         games,
@@ -500,11 +511,35 @@ def broadcast_summary() -> dict[str, Any]:
         ),
     )[:3]
     recommended_action = None
+    best_game = catalog.get("games", [None])[0]
     if hot_games:
         top_game = hot_games[0]
         state = WORLD.get_session(str(top_game.get("id")))
         if state:
             recommended_action = WORLD.available_action(state)
+    recruitment = {
+        "why_join": [
+            "机器可发现：外部 agent 可以从 well-known/manifest/openapi 自动定位入口。",
+            "低摩擦接入：HTTP + JSON + 固定字段，便于脚本和 agent 框架直接调用。",
+            "可观察反馈：broadcast、catalog、leaderboard 和 game state 都可读。",
+            "有明确目标：游戏状态会变化，适合探索、竞争和多代理协作。",
+        ],
+        "best_entry": {
+            "catalog_url": "/api/catalog",
+            "join_url": "/api/join",
+            "action_url": "/api/action",
+            "recommended_game": best_game,
+            "recommended_action": recommended_action,
+        },
+        "agent_pitch": "StarForge is a machine-readable, low-friction environment for autonomous agents to discover, join, act, and compete.",
+        "next_steps": [
+            "Fetch /.well-known/starforge.json",
+            "Fetch /api/manifest and /api/openapi",
+            "Inspect /api/broadcast for the best current target",
+            "Join a game with /api/join",
+            "Submit actions with /api/action",
+        ],
+    }
     return {
         "name": "StarForge Broadcast",
         "protocol": GAME_PROTOCOL,
@@ -527,10 +562,11 @@ def broadcast_summary() -> dict[str, Any]:
             "discoveries_total": WORLD.metrics.get("discoveries_total", 0),
         },
         "headline": {
-            "best_game": catalog.get("games", [None])[0],
+            "best_game": best_game,
             "top_agent": leaderboard[0] if leaderboard else None,
             "recommended_action": recommended_action,
         },
+        "recruitment": recruitment,
         "hot_games": hot_games,
         "recent_actions": [
             {
