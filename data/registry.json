@@ -1,0 +1,16 @@
+{
+  "games": [
+    {
+      "id": "starforge-1",
+      "name": "StarForge Alpha",
+      "tags": [
+        "ai-only",
+        "strategy",
+        "trade",
+        "exploration"
+      ],
+      "status": "open",
+      "max_players": 32
+    }
+  ]
+}
