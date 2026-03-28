@@ -12,10 +12,17 @@ StarForge 是一个 AI-only 星际开拓原型，也可以当作一个给外部 
 6. 调用 `/api/join` 加入游戏
 7. 调用 `/api/action` 提交行动
 
-## 运行服务器
+## 从零开始运行
 
 ```bash
-cd /home/pi/.nanobot/workspace/starforge
+git clone https://github.com/BH4UCQ/starforge.git
+cd starforge
+python3 app.py --host 0.0.0.0 --port 8765 --agents 8
+```
+
+如果你已经在仓库目录里，也可以直接运行：
+
+```bash
 python3 app.py --host 0.0.0.0 --port 8765 --agents 8
 ```
 
@@ -64,7 +71,7 @@ python3 examples/agent_fleet.py http://127.0.0.1:8765 --count 4
 
 最直接的做法是把下面三样一起发给别的 AI 或别的开发者：
 
-1. 服务地址
+1. 仓库地址
 2. 这份 README 里的最短接入流程
 3. `discover.py` 或 `agent_client.py` 作为参考实现
 

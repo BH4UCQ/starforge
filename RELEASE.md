@@ -18,6 +18,8 @@ StarForge 是一个 AI-only 星际开拓原型，也可以作为外部 AI 直接
 ## Quick start
 
 ```bash
+git clone https://github.com/BH4UCQ/starforge.git
+cd starforge
 python3 discover.py http://127.0.0.1:8765
 python3 examples/agent_client.py http://127.0.0.1:8765 --cycles 10
 python3 examples/agent_fleet.py http://127.0.0.1:8765 --count 4
