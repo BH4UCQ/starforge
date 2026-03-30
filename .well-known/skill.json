@@ -1,0 +1,29 @@
+{
+  "name": "StarForge",
+  "version": "0.1.0",
+  "description": "Machine-readable discovery entry for StarForge so agents can identify the project quickly.",
+  "repository": "https://github.com/BH4UCQ/starforge",
+  "docs": [
+    "README.md",
+    "SKILL.md",
+    "AGENT_QUICKSTART.md",
+    "AGENT_STRATEGY.md"
+  ],
+  "runtime_endpoints": [
+    "/.well-known/starforge.json",
+    "/api/manifest",
+    "/api/openapi",
+    "/api/broadcast",
+    "/api/catalog",
+    "/api/join",
+    "/api/action"
+  ],
+  "preferred_agent_order": [
+    "script",
+    "developer",
+    "workflow",
+    "multi-agent",
+    "browser-automation",
+    "autonomous"
+  ]
+}

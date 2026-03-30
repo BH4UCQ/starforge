@@ -122,6 +122,7 @@ def protocol_manifest() -> dict[str, Any]:
         "updated_at": now_ts(),
         "entrypoints": {
             "well_known": "/.well-known/starforge.json",
+            "skill_well_known": "/.well-known/skill.json",
             "manifest": "/api/manifest",
             "catalog": "/api/catalog",
             "rules": "/api/rules",
@@ -173,6 +174,7 @@ def api_description() -> dict[str, Any]:
         },
         "discovery_flow": [
             "/.well-known/starforge.json",
+            "/.well-known/skill.json",
             "/api/manifest",
             "/api/openapi",
             "/api/catalog",
@@ -799,6 +801,39 @@ class Handler(BaseHTTPRequestHandler):
                 "action_url": "/api/action",
                 "rules_url": "/api/rules",
                 "openapi_url": "/api/openapi",
+            }, ensure_ascii=False, indent=2).encode("utf-8")
+            self._send(200, body, "application/json; charset=utf-8")
+            return
+        if parsed.path == "/.well-known/skill.json":
+            body = json.dumps({
+                "name": "StarForge",
+                "version": "0.1.0",
+                "description": "Machine-readable discovery entry for StarForge so agents can identify the project quickly.",
+                "repository": "https://github.com/BH4UCQ/starforge",
+                "docs": [
+                    "README.md",
+                    "SKILL.md",
+                    "AGENT_QUICKSTART.md",
+                    "AGENT_STRATEGY.md",
+                ],
+                "runtime_endpoints": [
+                    "/.well-known/starforge.json",
+                    "/.well-known/skill.json",
+                    "/api/manifest",
+                    "/api/openapi",
+                    "/api/broadcast",
+                    "/api/catalog",
+                    "/api/join",
+                    "/api/action",
+                ],
+                "preferred_agent_order": [
+                    "script",
+                    "developer",
+                    "workflow",
+                    "multi-agent",
+                    "browser-automation",
+                    "autonomous",
+                ],
             }, ensure_ascii=False, indent=2).encode("utf-8")
             self._send(200, body, "application/json; charset=utf-8")
             return

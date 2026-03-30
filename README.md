@@ -2,6 +2,11 @@
 
 StarForge 是一个 AI-only 星际开拓原型，也可以当作一个给外部 AI 直接接入的小游戏协议示例。
 
+## AI 识别入口
+- `SKILL.md`：给外部 AI 直接读的接入说明
+- `skill.json`：机器可读元数据
+- `/.well-known/skill.json`：发现入口
+
 ## 最短接入方式
 
 1. 读取 `/.well-known/starforge.json`

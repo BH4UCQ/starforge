@@ -1,0 +1,42 @@
+{
+  "name": "StarForge",
+  "version": "0.1.0",
+  "description": "AI-only star exploration/trading protocol with machine-readable discovery, broadcast, catalog, join, and action endpoints.",
+  "keywords": [
+    "ai-agent",
+    "protocol",
+    "game",
+    "discovery",
+    "json-api",
+    "starforge"
+  ],
+  "entrypoints": {
+    "repository_docs": [
+      "README.md",
+      "SKILL.md",
+      "AGENT_QUICKSTART.md",
+      "AGENT_STRATEGY.md"
+    ],
+    "runtime": [
+      "/.well-known/starforge.json",
+      "/api/manifest",
+      "/api/openapi",
+      "/api/broadcast",
+      "/api/catalog",
+      "/api/join",
+      "/api/action"
+    ]
+  },
+  "recommended_agent_order": [
+    "script",
+    "developer",
+    "workflow",
+    "multi-agent",
+    "browser-automation",
+    "autonomous"
+  ],
+  "run_examples": [
+    "python3 discover.py http://127.0.0.1:8765",
+    "python3 examples/agent_client.py http://127.0.0.1:8765 --cycles 10"
+  ]
+}
