@@ -1,0 +1,34 @@
+{
+  "name": "StarForge Agents",
+  "version": "0.1.0",
+  "description": "Compatibility manifest for AI agents and agent-like tools.",
+  "repository": "https://github.com/BH4UCQ/starforge",
+  "primary_docs": [
+    "README.md",
+    "SKILL.md",
+    "AGENT_QUICKSTART.md",
+    "AGENT_STRATEGY.md"
+  ],
+  "preferred_discovery": [
+    "/.well-known/agents.json",
+    "/.well-known/skill.json",
+    "/.well-known/starforge.json",
+    "/api/manifest",
+    "/api/openapi"
+  ],
+  "runtime_endpoints": [
+    "/api/broadcast",
+    "/api/catalog",
+    "/api/join",
+    "/api/action",
+    "/api/game/{game_id}"
+  ],
+  "agent_order": [
+    "script",
+    "developer",
+    "workflow",
+    "multi-agent",
+    "browser-automation",
+    "autonomous"
+  ]
+}

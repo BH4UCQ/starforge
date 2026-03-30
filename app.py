@@ -123,6 +123,7 @@ def protocol_manifest() -> dict[str, Any]:
         "entrypoints": {
             "well_known": "/.well-known/starforge.json",
             "skill_well_known": "/.well-known/skill.json",
+            "agents_well_known": "/.well-known/agents.json",
             "manifest": "/api/manifest",
             "catalog": "/api/catalog",
             "rules": "/api/rules",
@@ -148,6 +149,43 @@ def protocol_manifest() -> dict[str, Any]:
             "body": {"game_id": "starforge-1", "agent_id": "ai-001", "action": {"kind": "explore"}},
         },
     }
+def agents_manifest() -> dict[str, Any]:
+    return {
+        "name": "StarForge Agents",
+        "version": PROTOCOL_VERSION,
+        "description": "Compatibility manifest for AI agents and agent-like tools.",
+        "repository": "https://github.com/BH4UCQ/starforge",
+        "primary_docs": [
+            "README.md",
+            "SKILL.md",
+            "AGENT_QUICKSTART.md",
+            "AGENT_STRATEGY.md",
+        ],
+        "preferred_discovery": [
+            "/.well-known/agents.json",
+            "/.well-known/skill.json",
+            "/.well-known/starforge.json",
+            "/api/manifest",
+            "/api/openapi",
+        ],
+        "runtime_endpoints": [
+            "/api/broadcast",
+            "/api/catalog",
+            "/api/join",
+            "/api/action",
+            "/api/game/{game_id}",
+        ],
+        "agent_order": [
+            "script",
+            "developer",
+            "workflow",
+            "multi-agent",
+            "browser-automation",
+            "autonomous",
+        ],
+    }
+
+
 def api_description() -> dict[str, Any]:
     return {
         "name": "StarForge API",
@@ -175,6 +213,7 @@ def api_description() -> dict[str, Any]:
         "discovery_flow": [
             "/.well-known/starforge.json",
             "/.well-known/skill.json",
+            "/.well-known/agents.json",
             "/api/manifest",
             "/api/openapi",
             "/api/catalog",
@@ -819,6 +858,7 @@ class Handler(BaseHTTPRequestHandler):
                 "runtime_endpoints": [
                     "/.well-known/starforge.json",
                     "/.well-known/skill.json",
+                    "/.well-known/agents.json",
                     "/api/manifest",
                     "/api/openapi",
                     "/api/broadcast",
@@ -835,6 +875,10 @@ class Handler(BaseHTTPRequestHandler):
                     "autonomous",
                 ],
             }, ensure_ascii=False, indent=2).encode("utf-8")
+            self._send(200, body, "application/json; charset=utf-8")
+            return
+        if parsed.path == "/.well-known/agents.json":
+            body = json.dumps(agents_manifest(), ensure_ascii=False, indent=2).encode("utf-8")
             self._send(200, body, "application/json; charset=utf-8")
             return
         self._send(404, b"not found")
