@@ -83,6 +83,7 @@ def main() -> int:
     print(f"[starforge] protocol: {manifest.get('protocol')} v{manifest.get('version')}")
     print(f"[starforge] openapi: {openapi.get('name')} resources={len(openapi.get('resources', {}))}")
     print(f"[starforge] agents: {agents.get('name')} order={agents.get('agent_order', [])}")
+    print(f"[starforge] agents_manifest_keys: {sorted(agents.keys())}")
     counts = broadcast.get("counts", {})
     print(
         "[starforge] broadcast: "

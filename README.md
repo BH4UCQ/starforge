@@ -8,6 +8,7 @@ StarForge 是一个 AI-only 星际开拓原型，也可以当作一个给外部 
 - `agents.json`：兼容更多 agent 约定的机器可读入口
 - `/.well-known/skill.json`：发现入口
 - `/.well-known/agents.json`：兼容入口
+- `/api/agents`：运行时兼容清单
 
 ## 最短接入方式
 

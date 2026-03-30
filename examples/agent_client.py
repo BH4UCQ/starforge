@@ -21,10 +21,35 @@ from urllib.parse import urljoin
 from urllib.request import Request, urlopen
 
 
-def get_json(url: str, timeout: int = 5) -> dict:
-    req = Request(url, headers={"Accept": "application/json"})
-    with urlopen(req, timeout=timeout) as resp:
-        return json.loads(resp.read().decode("utf-8"))
+def fetch_json(url: str, timeout: int = 5, retries: int = 2, backoff: float = 0.6) -> dict:
+    last_exc: Exception | None = None
+    for attempt in range(retries + 1):
+        try:
+            req = Request(url, headers={"Accept": "application/json"})
+            with urlopen(req, timeout=timeout) as resp:
+                return json.loads(resp.read().decode("utf-8"))
+        except (HTTPError, URLError, TimeoutError, json.JSONDecodeError) as exc:
+            last_exc = exc
+            if attempt < retries:
+                time.sleep(backoff * (attempt + 1))
+                continue
+            raise
+    assert last_exc is not None
+    raise last_exc
+
+
+def resolve_agents_manifest(base: str, timeout: int = 5) -> tuple[str, dict]:
+    candidates = ["api/agents", ".well-known/agents.json"]
+    last_error: Exception | None = None
+    for candidate in candidates:
+        url = urljoin(base, candidate)
+        try:
+            return url, fetch_json(url, timeout=timeout)
+        except Exception as exc:  # noqa: BLE001
+            last_error = exc
+    if last_error:
+        raise last_error
+    raise RuntimeError("no agents manifest candidates available")
 
 
 def post_json(url: str, payload: dict, timeout: int = 5) -> dict:
@@ -83,9 +108,12 @@ def main() -> int:
     joined_game_id: str | None = None
 
     print("[agent] boot")
-    well_known = get_json(urljoin(base, ".well-known/starforge.json"), timeout=args.timeout)
-    manifest = get_json(urljoin(base, "api/manifest"), timeout=args.timeout)
-    openapi = get_json(urljoin(base, "api/openapi"), timeout=args.timeout)
+    agents_url, agents_manifest = resolve_agents_manifest(base, timeout=args.timeout)
+    well_known = fetch_json(urljoin(base, ".well-known/starforge.json"), timeout=args.timeout)
+    manifest = fetch_json(urljoin(base, "api/manifest"), timeout=args.timeout)
+    openapi = fetch_json(urljoin(base, "api/openapi"), timeout=args.timeout)
+    print(f"[agent] agents_manifest={agents_url}")
+    print(f"[agent] agents_name={agents_manifest.get('name')} order={agents_manifest.get('agent_order', [])}")
     print(f"[agent] protocol={manifest.get('protocol')} version={manifest.get('version')}")
     print(f"[agent] resources={len(openapi.get('resources', {}))}")
     print(f"[agent] discovery_keys={sorted(well_known.keys())}")
@@ -97,8 +125,8 @@ def main() -> int:
             print("[agent] finished requested cycles")
             return 0
 
-        broadcast = get_json(urljoin(base, "api/broadcast"), timeout=args.timeout)
-        catalog = get_json(urljoin(base, "api/catalog"), timeout=args.timeout)
+        broadcast = fetch_json(urljoin(base, "api/broadcast"), timeout=args.timeout)
+        catalog = fetch_json(urljoin(base, "api/catalog"), timeout=args.timeout)
         target_game_id = best_game_id(catalog, broadcast)
         recommended = broadcast.get("headline", {}).get("recommended_action")
         hot_games = broadcast.get("hot_games", [])
@@ -145,7 +173,7 @@ def main() -> int:
                 time.sleep(args.interval)
                 continue
 
-        game_state = get_json(urljoin(base, f"api/game/{joined_game_id}"), timeout=args.timeout)
+        game_state = fetch_json(urljoin(base, f"api/game/{joined_game_id}"), timeout=args.timeout)
         state = game_state.get("state", {})
         action_kind = choose_action(state, recommended if isinstance(recommended, dict) else None)
         action_result = post_json(
