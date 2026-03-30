@@ -19,8 +19,11 @@
     ],
     "runtime": [
       "/.well-known/starforge.json",
+      "/.well-known/skill.json",
+      "/.well-known/agents.json",
       "/api/manifest",
       "/api/openapi",
+      "/api/agents",
       "/api/broadcast",
       "/api/catalog",
       "/api/join",

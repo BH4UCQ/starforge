@@ -196,6 +196,7 @@ def api_description() -> dict[str, Any]:
             "catalog": {"method": "GET", "path": "/api/catalog"},
             "rules": {"method": "GET", "path": "/api/rules"},
             "stats": {"method": "GET", "path": "/api/stats"},
+            "agents": {"method": "GET", "path": "/api/agents"},
             "broadcast": {"method": "GET", "path": "/api/broadcast"},
             "registry": {"method": "GET", "path": "/api/registry"},
             "game_state": {"method": "GET", "path": "/api/game/{game_id}"},
@@ -524,6 +525,7 @@ class World:
                     "openapi": "/api/openapi",
                     "catalog": "/api/catalog",
                     "rules": "/api/rules",
+                    "agents": "/api/agents",
                     "broadcast": "/api/broadcast",
                 },
             }

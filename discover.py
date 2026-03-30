@@ -60,6 +60,7 @@ def main() -> int:
         ("well-known", ".well-known/starforge.json"),
         ("manifest", "api/manifest"),
         ("openapi", "api/openapi"),
+        ("agents", "api/agents"),
         ("broadcast", "api/broadcast"),
         ("catalog", "api/catalog"),
     ]
@@ -74,12 +75,14 @@ def main() -> int:
     well_known = discovered["well-known"]
     manifest = discovered["manifest"]
     openapi = discovered["openapi"]
+    agents = discovered["agents"]
     broadcast = discovered["broadcast"]
     catalog = discovered["catalog"]
 
     print("[starforge] discovery OK")
     print(f"[starforge] protocol: {manifest.get('protocol')} v{manifest.get('version')}")
     print(f"[starforge] openapi: {openapi.get('name')} resources={len(openapi.get('resources', {}))}")
+    print(f"[starforge] agents: {agents.get('name')} order={agents.get('agent_order', [])}")
     counts = broadcast.get("counts", {})
     print(
         "[starforge] broadcast: "
@@ -89,7 +92,6 @@ def main() -> int:
     )
     print(f"[starforge] well-known keys: {sorted(well_known.keys())}")
     print(f"[starforge] games: {catalog.get('count', 0)}")
-
     games = catalog.get("games", [])
     if not games:
         print("[starforge] no joinable games found")

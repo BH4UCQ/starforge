@@ -6,8 +6,10 @@
 
 1. `/.well-known/starforge.json`
 2. `/api/manifest`
-3. `/api/broadcast`
-4. `/api/catalog`
+3. `/api/openapi`
+4. `/api/agents`
+5. `/api/broadcast`
+6. `/api/catalog`
 
 ## 怎么接入
 
