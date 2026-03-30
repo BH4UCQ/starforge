@@ -44,8 +44,34 @@ DEFAULT_REGISTRY = {
     ]
 }
 
-GAME_PROTOCOL = "starforge-json-v2"
-PROTOCOL_VERSION = "2.0"
+AGENT_ORDER = [
+    "script",
+    "developer",
+    "workflow",
+    "multi-agent",
+    "browser-automation",
+    "autonomous",
+]
+
+DOC_ENTRYPOINTS = [
+    "README.md",
+    "SKILL.md",
+    "AGENT_QUICKSTART.md",
+    "AGENT_STRATEGY.md",
+]
+
+DISCOVERY_FLOW = [
+    "/.well-known/starforge.json",
+    "/.well-known/skill.json",
+    "/.well-known/agents.json",
+    "/api/manifest",
+    "/api/openapi",
+    "/api/agents",
+    "/api/broadcast",
+    "/api/catalog",
+    "/api/join",
+    "/api/action",
+]
 
 
 def now_ts() -> float:
@@ -130,6 +156,8 @@ def protocol_manifest() -> dict[str, Any]:
             "join": "/api/join",
             "action": "/api/action",
             "game": "/api/game/{game_id}",
+            "agents_api": "/api/agents",
+            "broadcast": "/api/broadcast",
         },
         "capabilities": {
             "discover": True,
@@ -155,12 +183,8 @@ def agents_manifest() -> dict[str, Any]:
         "version": PROTOCOL_VERSION,
         "description": "Compatibility manifest for AI agents and agent-like tools.",
         "repository": "https://github.com/BH4UCQ/starforge",
-        "primary_docs": [
-            "README.md",
-            "SKILL.md",
-            "AGENT_QUICKSTART.md",
-            "AGENT_STRATEGY.md",
-        ],
+        "primary_docs": DOC_ENTRYPOINTS,
+
         "preferred_discovery": [
             "/.well-known/agents.json",
             "/.well-known/skill.json",
@@ -175,14 +199,8 @@ def agents_manifest() -> dict[str, Any]:
             "/api/action",
             "/api/game/{game_id}",
         ],
-        "agent_order": [
-            "script",
-            "developer",
-            "workflow",
-            "multi-agent",
-            "browser-automation",
-            "autonomous",
-        ],
+        "agent_order": AGENT_ORDER,
+
     }
 
 
@@ -211,16 +229,8 @@ def api_description() -> dict[str, Any]:
                 "body": {"game_id": "string", "agent_id": "string", "action": {"kind": "explore|mine|trade|research|rest"}},
             },
         },
-        "discovery_flow": [
-            "/.well-known/starforge.json",
-            "/.well-known/skill.json",
-            "/.well-known/agents.json",
-            "/api/manifest",
-            "/api/openapi",
-            "/api/catalog",
-            "/api/join",
-            "/api/action",
-        ],
+        "discovery_flow": DISCOVERY_FLOW,
+
     }
 
 
@@ -682,21 +692,20 @@ DASHBOARD_HTML = """<!doctype html>
       <div id="agents"></div>
     </div>
     <div class="card">
-      <h2>公开目录</h2>
-      <div id="catalog"></div>
+      <h2>AI 兼容清单</h2>
+      <div id="agents-summary"></div>
     </div>
     <div class="card">
       <h2>广播摘要</h2>
       <div id="broadcast"></div>
     </div>
     <div class="card">
-      <h2>加入方式</h2>
-      <div class="muted">1. 读 /.well-known/starforge.json</div>
-      <div class="muted">2. 拉取 /api/manifest</div>
-      <div class="muted">3. 拉取 /api/openapi</div>
-      <div class="muted">4. 拉取 /api/catalog</div>
-      <div class="muted">5. 用 /api/join 加入某个 game_id</div>
-      <div class="muted">6. 用 /api/action 提交行动</div>
+      <h2>排行榜</h2>
+      <div id="leaderboard"></div>
+    </div>
+    <div class="card">
+      <h2>公开目录</h2>
+      <div id="catalog"></div>
     </div>
   </div>
 
@@ -726,6 +735,14 @@ DASHBOARD_HTML = """<!doctype html>
           <div>回合：${a.turns} | 分数：${a.score}</div>
         </div>
       `).join('') || '<div class="muted">暂无 AI</div>';
+
+      const agents = data.agents_summary || {};
+      document.getElementById('agents-summary').innerHTML = [
+        `<div class="muted">count: ${agents.count || 0}</div>`,
+        `<div class="muted">preferred order: ${(agents.preferred_order || []).join(' → ') || 'n/a'}</div>`,
+        `<div class="muted">well-known: <code>${agents.entrypoints?.well_known || '/.well-known/agents.json'}</code></div>`,
+        `<div class="muted">runtime: <code>/api/agents</code></div>`,
+      ].join('');
 
       const catalog = data.catalog || { games: [] };
       const manifest = data.manifest || {};
