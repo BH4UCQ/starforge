@@ -496,6 +496,22 @@ class World:
                 "active_ai": active_players,
                 "sessions": sessions,
                 "agents": list(self.agent_registry.values()),
+                "agents_summary": {
+                    "count": active_players,
+                    "preferred_order": [
+                        "script",
+                        "developer",
+                        "workflow",
+                        "multi-agent",
+                        "browser-automation",
+                        "autonomous",
+                    ],
+                    "entrypoints": {
+                        "well_known": "/.well-known/agents.json",
+                        "repository": "agents.json",
+                        "skill": "/.well-known/skill.json",
+                    },
+                },
                 "leaderboard": leaderboard,
                 "registry": self.registry,
                 "catalog": self.discover_catalog(),
@@ -800,6 +816,10 @@ class Handler(BaseHTTPRequestHandler):
             return
         if parsed.path == "/api/catalog":
             body = json.dumps(WORLD.discover_catalog(), ensure_ascii=False, indent=2).encode("utf-8")
+            self._send(200, body, "application/json; charset=utf-8")
+            return
+        if parsed.path == "/api/agents":
+            body = json.dumps(agents_manifest(), ensure_ascii=False, indent=2).encode("utf-8")
             self._send(200, body, "application/json; charset=utf-8")
             return
         if parsed.path == "/api/manifest":
